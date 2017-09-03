@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:pokemon-info="http://www.mulesoft.org/schema/mule/pokemon-info" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/pokemon-info http://www.mulesoft.org/schema/mule/pokemon-info/current/mule-pokemon-info.xsd">
+    <pokemon-info:config name="PokemonInfo__Configuration" doc:name="PokemonInfo: Configuration"/>
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <flow name="pokemondemoFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/ability" doc:name="HTTP"/>
+        <logger message="#[message.inboundProperties.'http.request.uri']" level="INFO" doc:name="Logger"/>
+        <logger message="path:#[message.inboundProperties.'http.request.path']" level="INFO" doc:name="Logger"/>
+        <pokemon-info:search-on-ability config-ref="PokemonInfo__Configuration" level="#[message.inboundProperties.'http.query.params'.value]" doc:name="PokemonInfo"/>
+    </flow>
+    <flow name="pokemondemoFlow1">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/type" doc:name="HTTP"/>
+        <logger level="INFO" doc:name="Logger"/>
+        <pokemon-info:search-on-type config-ref="PokemonInfo__Configuration" typelevel="#[message.inboundProperties.'http.query.params'.value]" doc:name="PokemonInfo"/>
+    </flow>
+</mule>
